@@ -1,0 +1,18 @@
+[package]
+name = "siguranta"
+version = "0.1.0"
+authors = ["Vincent Berg <gvb@anvilventures.com>"]
+edition = "2018"
+
+[lib]
+name = "imghash"
+path = "src/lib.rs"
+
+[[bin]]
+name = "siguranta"
+path = "src/main.rs"
+
+[dependencies]
+byteorder = "1.3.2"
+base64 = "0.10.1"
+png = "0.14.1"
