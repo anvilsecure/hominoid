@@ -1,7 +1,7 @@
 {
   "name": "siguranta",
   "description": "Siguranta - An Anti-Phising Plugin proof of concept by Anvil Ventures",
-  "path": "/Users/gvb/anvil/Anvil Dropbox/Vincent Berg/AnvilWorkInProgress/siguranta/app/siguranta",
+  "path": "/Users/gvb/siguranta/target/debug/siguranta",
   "type": "stdio",
   "allowed_extensions": [ "siguranta@anvilventures.com" ]
 }

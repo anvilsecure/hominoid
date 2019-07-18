@@ -6,7 +6,7 @@ port.onMessage.addListener((response) => {
 
 function onCaptured(imageUri) {
   console.log("Sending:  ping: " + imageUri);
-  port.postMessage("ping" + imageUri);
+  port.postMessage(imageUri);
 }
 
 function onError(error) {

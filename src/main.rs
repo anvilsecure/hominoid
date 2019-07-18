@@ -6,10 +6,10 @@ use base64;
 use imghash;
 
 /*
- * The image suppliedto use will be base64 encoded and look something like
+ * The image supplied to use will be base64 encoded and look something like
  *  `data:image/png;base64,iVBOR...`
  */
-fn read_image(buf: &str) -> Result<Vec<u8>, &'static str> {
+fn get_image_from_data_url(buf: &str) -> Result<Vec<u8>, &'static str> {
     let preamble = "data:image/png;base64,";
 
     if !buf.starts_with(preamble) {
@@ -38,8 +38,11 @@ fn browser_addon_mode() {
     let mut buf = vec![0u8; ln as usize];
     stdin.read_exact(&mut buf).expect("I/O error when reading from stdin");
 
-    let image = String::from_utf8(buf).expect("invalid UTF-8");
-    let _pixels = read_image(&image).expect("couldn't read image");
+    let buf = String::from_utf8(buf).expect("invalid UTF-8");
+    let v = get_image_from_data_url(&buf).expect("couldn't get image from data url");
+    let img = imghash::read_image_from_vec(v).expect("couldn't read image from vector");
+    let hash = imghash::hash_image(img);
+    println!("{:?}", hash);
 }
 
 fn calc_hash_mode(file: &String) -> () {
