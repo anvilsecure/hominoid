@@ -3,7 +3,8 @@ use std::env;
 use byteorder::{ByteOrder, NativeEndian};
 use base64;
 
-use imghash;
+use siguranta::imghash;
+use siguranta::db;
 
 /*
  * The image supplied to use will be base64 encoded and look something like
@@ -38,17 +39,37 @@ fn browser_addon_mode() {
     let mut buf = vec![0u8; ln as usize];
     stdin.read_exact(&mut buf).expect("I/O error when reading from stdin");
 
-    let buf = String::from_utf8(buf).expect("invalid UTF-8");
+    let url_sz = NativeEndian::read_u32(&buf) as usize;
+    let url = String::from_utf8(buf[4..4+url_sz].to_vec()).expect("invalid UTF-8");
+
+    let img_sz = NativeEndian::read_u32(&buf[4+url_sz..8+url_sz]) as usize;
+    let buf = String::from_utf8(buf[8+url_sz..].to_vec()).expect("invalid UTF-8");
     let v = get_image_from_data_url(&buf).expect("couldn't get image from data url");
     let img = imghash::read_image_from_vec(v).expect("couldn't read image from vector");
     let hash = imghash::hash_image(img);
-    println!("{:?}", hash);
+
+    let conn = db::open().expect("ugh");
+    let db_hash = match db::get_hash_for_url(&conn, &url) {
+        Ok(v) => {
+            println!("d: 0x{:.16x}, a: 0x{:.16x}", hash.d, hash.a);
+            println!("d: 0x{:.16x}, a: 0x{:.16x}", v.d, v.a);
+        
+
+        }
+        Err(e) => {
+            /* so a hash for url wasn't found yet; this can mean two things:
+             * - either it's a new login page that we haven't seen yet
+             * - it hashes to another cached login page and we have detected a phising page
+             */
+            return;
+        }
+    };
 }
 
 fn calc_hash_mode(file: &String) -> () {
     let img = imghash::read_image_from_file(&file).expect("couldn't decode PNG properly");
     let hash = imghash::hash_image(img);
-    println!("dhash: {}, chash: {}", hash.d, hash.c);
+    println!("dhash: {}, ahash: {}", hash.d, hash.a);
 }
 
 fn compare_mode(file1: &String, file2: &String) -> () {

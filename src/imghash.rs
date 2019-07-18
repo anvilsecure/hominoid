@@ -13,7 +13,7 @@ pub struct Image {
 #[derive(Debug)]
 pub struct ImageHash {
     pub d: u64,
-    pub c: u64,
+    pub a: u64,
 }
 
 fn load_image<T: std::io::Read>(decoder: Decoder<T>) -> Result<Image, String> {
@@ -68,19 +68,52 @@ pub fn write_grayscale_image(img: Image, filename: &str) -> Result<(), String> {
 }
 
 fn dhash_image(img: &Image) -> u64 {
-    let img = gray_and_resize_image(img, 8, 9);
-    return 0;
+    let img = gray_and_resize_image(img, 9, 8);
+    let mut res: u64 = 0;
+    for i in 0..8 {
+        for j in 0..8 {
+            let off = i*9 + j;
+            let v = match img.pixels[off] < img.pixels[off+1] {
+                true => 1,
+                false => 0
+            };
+            res = (res << 1) | v;
+        }
+    }
+    return res;
 }
 
-fn chash_image(img: &Image) -> u64 {
+fn ahash_image(img: &Image) -> u64 {
     let img = gray_and_resize_image(img, 8, 8);
-    return 0;
+    let mut res: u64 = 0;
+    let mut mc: u64 = 0;
+
+    /* calculate mean */
+    for i in 0..8 {
+        for j in 0..8 {
+            mc = mc + img.pixels[i*8 + j] as u64;
+        }
+    }
+    let mc: u8 = (mc / 64) as u8;
+
+    for i in 0..8 {
+        for j in 0..8 {
+            let off = i*8 + j;
+            let v = match img.pixels[off] < mc {
+                true => 1,
+                false => 0
+            };
+            res = (res << 1) | v;
+        }
+    }
+
+    return res;
 }
 
 pub fn hash_image(img: Image) -> ImageHash {
     ImageHash {
         d: dhash_image(&img),
-        c: chash_image(&img),
+        a: ahash_image(&img),
     }
 }
 

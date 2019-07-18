@@ -5,7 +5,7 @@ authors = ["Vincent Berg <gvb@anvilventures.com>"]
 edition = "2018"
 
 [lib]
-name = "imghash"
+name = "siguranta"
 path = "src/lib.rs"
 
 [[bin]]
@@ -16,3 +16,4 @@ path = "src/main.rs"
 byteorder = "1.3.2"
 base64 = "0.10.1"
 png = "0.14.1"
+rusqlite = "0.19.0"
