@@ -12,6 +12,7 @@ $ ./test.py https://example.com screenshot.png | ../target/release/siguranta
 """
 
 import base64
+import json
 import os
 import struct
 import sys
@@ -28,14 +29,10 @@ url, png = sys.argv[1:3]
 
 # open PNG, convert to base64 and add data-url preamble
 with open(png, "rb") as fd:
-    pngdata = b"data:image/png;base64," + base64.b64encode(fd.read())
+    pngdata = "data:image/png;base64," + base64.b64encode(fd.read()).decode("utf-8")
 
 
-# <url_len, url, png_len, png> with length values in native endian format
-message = b"".join([struct.pack("@I", len(url)),
-                    url.encode("utf-8"),
-                    struct.pack("@I", len(pngdata)),
-                    pngdata])
+message = json.dumps({"url":url, "img":pngdata}).encode("utf-8")
 
 # write len message + message to stdout
 fp = os.fdopen(sys.stdout.fileno(), "wb")
