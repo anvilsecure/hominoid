@@ -6,7 +6,7 @@ port.onMessage.addListener((response) => {
 
 function onCaptured(img) {
   var url = "https://test.com";
-  var message = JSON.stringify({"url":url, "img":img});
+  var message = {"url":url, "img":img};
   port.postMessage(message);
 }
 
