@@ -110,6 +110,20 @@ fn ahash_image(img: &Image) -> u64 {
     return res;
 }
 
+fn hamming(i: u64, j: u64) -> u64 {
+    let mut c: u64 = 0;
+    let r: u64 = i ^ j;
+    for k in 0..64 {
+        c = c + ((r >> k) & 0x1);
+    }
+    return c;
+}
+
+pub fn hamming_distance(h1: ImageHash, h2: ImageHash) -> (u64, u64) {
+    (hamming(h1.d, h2.d),
+    hamming(h1.a, h2.a))
+}
+
 pub fn hash_image(img: Image) -> ImageHash {
     ImageHash {
         d: dhash_image(&img),

@@ -49,21 +49,34 @@ fn browser_addon_mode() {
     let hash = imghash::hash_image(img);
 
     let conn = db::open().expect("ugh");
-    let db_hash = match db::get_hash_for_url(&conn, &url) {
+    match db::get_hash_for_url(&conn, &url) {
         Ok(v) => {
             println!("d: 0x{:.16x}, a: 0x{:.16x}", hash.d, hash.a);
             println!("d: 0x{:.16x}, a: 0x{:.16x}", v.d, v.a);
+            let (d, a) = imghash::hamming_distance(hash, v);
+            println!("d-hamming: 0x{:.16x}, a-hamming: 0x{:.16x}", d, a);
         
 
-        }
+        },
         Err(e) => {
             /* so a hash for url wasn't found yet; this can mean two things:
              * - either it's a new login page that we haven't seen yet
              * - it hashes to another cached login page and we have detected a phising page
              */
+
+            db::insert_hash_for_url(&conn, &url, &hash);
+            let hamming_distance = 2;
+            match db::get_urls_for_hash(&conn, &hash, hamming_distance) {
+                Ok(v) => {
+                },
+                Err(e) => {
+                    /* nothing find; looks like a fully new entry? */
+                }
+            }
+
             return;
         }
-    };
+    }
 }
 
 fn calc_hash_mode(file: &String) -> () {

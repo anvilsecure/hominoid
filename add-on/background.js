@@ -4,9 +4,10 @@ port.onMessage.addListener((response) => {
   console.log("Received: " + response);
 });
 
-function onCaptured(imageUri) {
-  console.log("Sending:  ping: " + imageUri);
-  port.postMessage(imageUri);
+function onCaptured(img) {
+  var url = "https://test.com";
+  var message = JSON.stringify({"url":url, "img":img});
+  port.postMessage(message);
 }
 
 function onError(error) {

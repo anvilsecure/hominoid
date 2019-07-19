@@ -1,10 +1,19 @@
 use rusqlite::types::ToSql;
 use rusqlite::{Connection, Result, NO_PARAMS, params};
+use dirs::home_dir;
+use std::path::{Path, PathBuf};
 
 use crate::imghash::ImageHash;
 
 pub fn open() -> Result<Connection> {
-    let path = "test.db";
+    let mut path = match home_dir() {
+        Some(v) => v,
+        None => {
+            panic!("couldn't find homedir");
+        }
+    };
+    path.push(".siguranta.db");
+
     let conn = Connection::open(&path)?;
     conn.execute(
         "CREATE TABLE IF NOT EXISTS entries 
@@ -41,5 +50,38 @@ pub fn get_hash_for_url(conn: &Connection, url: &String) -> Result<ImageHash> {
 }
 
 pub fn insert_hash_for_url(conn: &Connection, url: &String, hash: &ImageHash) -> Result<()> {
+    let mut stmt = conn.prepare(
+        "INSERT INTO entries (url, d_hash_hi, d_hash_lo, a_hash_hi, a_hash_lo) VALUES (?,?,?,?,?)"
+    )?;
+    let (d_hi, d_lo) = split_value(hash.d);
+    let (a_hi, a_lo) = split_value(hash.a);
+    //stmt.execute(&[&url, d_hi, d_lo, a_hi, a_lo]);
+    //stmt.execute(&[&url, 5, d_lo, a_hi, a_lo]);
+    let mut rows = stmt.execute(params![url, d_hi, d_lo, a_hi, a_lo]);
     Ok(())
+}
+
+#[inline]
+fn split_value(val: u64) -> (u32, u32) {
+    let hi: u32 = ((val >> 32) & 0xffffffff) as u32;
+    let lo: u32 = (val & 0xffffffff) as u32;
+    return (hi, lo)
+}
+
+pub fn get_urls_for_hash(conn: &Connection, hash: &ImageHash, distance: u32) -> Result<Vec<String>> {
+    let mut stmt = conn.prepare(
+        "SELECT * FROM entries WHERE
+            (d_hash_hi = ? AND d_hash_lo = ?) OR
+            (a_hash_hi = ? AND a_hash_lo = ?)"
+    )?;
+    let (d_hi, d_lo) = split_value(hash.d);
+    let (a_hi, a_lo) = split_value(hash.a);
+    let mut rows = stmt.query(&[d_hi, d_lo, a_hi, a_lo])?;
+    while let Some(row) = rows.next()? {
+        let url: String = row.get(1)?;
+        println!("RESULT: {:?}", url);
+    };
+
+    
+    Ok(vec![])
 }
