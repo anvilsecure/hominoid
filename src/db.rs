@@ -69,6 +69,12 @@ fn split_value(val: u64) -> (u32, u32) {
 }
 
 pub fn get_urls_for_hash(conn: &Connection, hash: &ImageHash, distance: u32) -> Result<Vec<String>> {
+
+    if distance > 2 {
+        return Err(rusqlite::Error::InvalidParameterName("only allow a maximum hamming distance search of 2".to_string()));
+    }
+
+    let mut ret = vec![];
     let mut stmt = conn.prepare(
         "SELECT * FROM entries WHERE
             (d_hash_hi = ? AND d_hash_lo = ?) OR
@@ -79,9 +85,8 @@ pub fn get_urls_for_hash(conn: &Connection, hash: &ImageHash, distance: u32) -> 
     let mut rows = stmt.query(&[d_hi, d_lo, a_hi, a_lo])?;
     while let Some(row) = rows.next()? {
         let url: String = row.get(1)?;
-        println!("RESULT: {:?}", url);
+        ret.push(url);
     };
 
-    
-    Ok(vec![])
+    Ok(ret)
 }

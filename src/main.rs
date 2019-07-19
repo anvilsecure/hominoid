@@ -167,8 +167,45 @@ fn browser_addon_mode() {
              * - either it's a new login page that we haven't seen yet
              * - it hashes to another cached login page and we have detected a phising page
              */
-            db::insert_hash_for_url(&conn, &url, &hash);
-            info!("inserted new entry into database");
+
+            let db_urls = match db::get_urls_for_hash(&conn, &hash, 2) {
+                Err(e) => {
+                    error!("error while trying to get urls for hash");
+                    panic!("error: {:?}", e);
+                },
+                Ok(v) => v,
+            };
+            let ln = db_urls.len();
+
+            /* if we found matches for the hash within a hamming distance of 2 or less the pages
+             * are very similar; we'll check to see if there's a url match; if there isn't it is
+             * likely a phising page */
+            for db_url in db_urls {
+            }
+
+            if ln != 0 {
+                let mut phishing = true;
+                for db_url in db_urls {
+                    info!("url found for hashes: {:?}", db_url);
+                    if url == db_url {
+                        info!("Found exact url match: {:?}", url);
+                        phishing = false;
+                        break;
+                    }
+                }
+                if phishing {
+                    let b: Vec<String> = db_urls.into_iter().collect();
+                    write_message(format!("phishing detected: {:?} seems to be phishing {:?}", b, url).as_str());
+                }
+                else {
+                    write_message(format!("full match detected for {:?}", url).as_str());
+                }
+            }
+            else {
+                db::insert_hash_for_url(&conn, &url, &hash);
+                info!("inserted new entry into database");
+                write_message(format!("new entry for {:?} inserted in database", url).as_str());
+            }
         }
 
         write_message("hello world!!! 2");
