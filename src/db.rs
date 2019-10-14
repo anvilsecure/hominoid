@@ -1,7 +1,5 @@
-use rusqlite::types::ToSql;
 use rusqlite::{Connection, Result, NO_PARAMS, params};
 use dirs::home_dir;
-use std::path::{Path, PathBuf};
 
 use crate::imghash::ImageHash;
 
@@ -12,7 +10,7 @@ pub fn open() -> Result<Connection> {
             panic!("couldn't find homedir");
         }
     };
-    path.push(".siguranta.db");
+    path.push(".hominoid.db");
 
     let conn = Connection::open(&path)?;
     conn.execute(
@@ -35,7 +33,7 @@ pub fn get_hash_for_url(conn: &Connection, url: &String) -> Result<ImageHash> {
     let row = rows.next()?;
     match row {
         Some(row) => {
-            let url: String = row.get(1)?;
+            let _url: String = row.get(1)?;
             let d_hash_hi: u32 = row.get(2)?;
             let d_hash_lo: u32 = row.get(3)?;
             let a_hash_hi: u32 = row.get(4)?;
@@ -57,7 +55,7 @@ pub fn insert_hash_for_url(conn: &Connection, url: &String, hash: &ImageHash) ->
     let (a_hi, a_lo) = split_value(hash.a);
     //stmt.execute(&[&url, d_hi, d_lo, a_hi, a_lo]);
     //stmt.execute(&[&url, 5, d_lo, a_hi, a_lo]);
-    let mut rows = stmt.execute(params![url, d_hi, d_lo, a_hi, a_lo]);
+    let mut _rows = stmt.execute(params![url, d_hi, d_lo, a_hi, a_lo]);
     Ok(())
 }
 

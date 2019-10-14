@@ -1,15 +1,15 @@
 [package]
-name = "siguranta"
+name = "hominoid"
 version = "0.1.0"
 authors = ["Vincent Berg <gvb@anvilventures.com>"]
 edition = "2018"
 
 [lib]
-name = "siguranta"
+name = "hominoid"
 path = "src/lib.rs"
 
 [[bin]]
-name = "siguranta"
+name = "hominoid"
 path = "src/main.rs"
 
 [dependencies]

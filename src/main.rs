@@ -9,8 +9,8 @@ use dirs::home_dir;
 use log::LevelFilter;
 use log::{info, error};
 
-use siguranta::imghash;
-use siguranta::db;
+use hominoid::imghash;
+use hominoid::db;
 
 /*
  * The image supplied to use will be base64 encoded and look something like
@@ -180,31 +180,33 @@ fn browser_addon_mode() {
             /* if we found matches for the hash within a hamming distance of 2 or less the pages
              * are very similar; we'll check to see if there's a url match; if there isn't it is
              * likely a phising page */
-            for db_url in db_urls {
-            }
 
-            if ln != 0 {
-                let mut phishing = true;
-                for db_url in db_urls {
-                    info!("url found for hashes: {:?}", db_url);
-                    if url == db_url {
-                        info!("Found exact url match: {:?}", url);
-                        phishing = false;
-                        break;
+             {
+                 let db2_urls = &db_urls;
+
+                if ln != 0 {
+                    let mut phishing = true;
+                    for db_url in db2_urls {
+                        info!("url found for hashes: {:?}", db_url);
+                        if url == *db_url {
+                            info!("Found exact url match: {:?}", url);
+                            phishing = false;
+                            break;
+                        }
+                    }
+                    if phishing {
+                        let b: Vec<String> = db_urls.into_iter().collect();
+                        write_message(format!("phishing detected: {:?} seems to be phishing {:?}", b, url).as_str());
+                    }
+                    else {
+                        write_message(format!("full match detected for {:?}", url).as_str());
                     }
                 }
-                if phishing {
-                    let b: Vec<String> = db_urls.into_iter().collect();
-                    write_message(format!("phishing detected: {:?} seems to be phishing {:?}", b, url).as_str());
-                }
                 else {
-                    write_message(format!("full match detected for {:?}", url).as_str());
+                    db::insert_hash_for_url(&conn, &url, &hash);
+                    info!("inserted new entry into database");
+                    write_message(format!("new entry for {:?} inserted in database", url).as_str());
                 }
-            }
-            else {
-                db::insert_hash_for_url(&conn, &url, &hash);
-                info!("inserted new entry into database");
-                write_message(format!("new entry for {:?} inserted in database", url).as_str());
             }
         }
 
@@ -220,7 +222,7 @@ fn main() {
             panic!("couldn't find homedir");
         }
     };
-    path.push(".siguranta.log");
+    path.push(".hominoid.log");
 
     let ret = simple_logging::log_to_file(&path, LevelFilter::Info);
     if ret.is_err() {
@@ -240,7 +242,7 @@ fn main() {
         3 => {
             /* if args[2] is set to the add-on application identifier we got most likely called
              * from the browser so go into add-on mode too */
-            if args[2] == "siguranta@anvilventures.com" {
+            if args[2] == "hominoid@anvilventures.com" {
                 /* this means we're called from the browser */
                 browser_addon_mode();
             }

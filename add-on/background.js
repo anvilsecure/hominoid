@@ -1,11 +1,11 @@
-var port = browser.runtime.connectNative("siguranta");
+var port = browser.runtime.connectNative("hominoid");
 
 port.onMessage.addListener((obj) => {
   console.log("RESULT: " + obj["result"]);
 });
 
 function onCaptured(img) {
-  var url = "https://test.com";
+  var url = "https://test5.com";
   var message = {"url":url, "img":img};
   port.postMessage(message);
 }

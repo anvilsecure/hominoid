@@ -7,7 +7,7 @@ output can be directly piped to the main binary.
 
 Usage:
 
-$ ./test.py https://example.com screenshot.png | ../target/release/siguranta
+$ ./test.py https://example.com screenshot.png | ../target/release/hominoid
 ...
 """
 

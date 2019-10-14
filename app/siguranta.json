@@ -1,7 +1,7 @@
 {
-  "name": "siguranta",
-  "description": "Siguranta - An Anti-Phising Plugin proof of concept by Anvil Ventures",
-  "path": "/Users/gvb/siguranta/target/debug/siguranta",
+  "name": "hominoid",
+  "description": "Hominoid - An Anti-Phising Plugin proof of concept by Anvil Ventures",
+  "path": "/Users/gvb/hominoid/target/debug/hominoid",
   "type": "stdio",
-  "allowed_extensions": [ "siguranta@anvilventures.com" ]
+  "allowed_extensions": [ "hominoid@anvilventures.com" ]
 }

@@ -1,7 +1,7 @@
 {
-  "description": "Siguranta - An Anti-Phising Plugin proof of concept by Anvil Ventures",
+  "description": "Hominoid - An Anti-Phising Plugin proof of concept by Anvil Ventures",
   "manifest_version": 2,
-  "name": "Siguranta - Anti-Phising Plugin (poc)",
+  "name": "Hominoid - Anti-Phising Plugin (poc)",
   "version": "1.0",
   "icons": {
     "48": "anvil.png"
@@ -9,7 +9,7 @@
 
   "applications": {
     "gecko": {
-      "id": "siguranta@anvilventures.com",
+      "id": "hominoid@anvilventures.com",
       "strict_min_version": "50.0"
     }
   },
