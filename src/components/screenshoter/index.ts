@@ -1,0 +1,1 @@
+export { Screenshoter } from "./component";
