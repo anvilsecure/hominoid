@@ -1,6 +1,21 @@
 import React, { FunctionComponent } from "react";
-import "./styles.scss";
 import { browser, Tabs } from "webextension-polyfill-ts";
+
+const CODE = `
+  import {DifferenceHashBuilder, Hash} from 'browser-image-hash';
+
+  const builder = new DifferenceHashBuilder();
+  const targetURL = new URL('./example.jpg', window.location.href);
+  const destHash = await builder.build(targetURL);
+  const srcHash = new Hash('0111011001110000011110010101101100110011000100110101101000111000');
+ 
+  if (srcHash.getHammingDistance(destHash) <= 10) {
+     console.log('Resembles');
+     return;
+  }
+ 
+  console.log('Different');
+`;
 
 /**
  * Executes a string of Javascript on the current tab
@@ -19,13 +34,17 @@ function executeScript(code: string): void {
                 return;
             }
 
+            browser.tabs.executeScript(currentTab.id, {
+                file: "jquery.min.js",
+            });
+
             // Executes the script in the current tab
             browser.tabs
                 .executeScript(currentTab.id, {
                     code,
                 })
                 .then(() => {
-                    console.log("Done Scrolling");
+                    console.log("Done executing code");
                 });
         });
 }
@@ -38,15 +57,9 @@ export const Screenshoter: FunctionComponent = () => {
             <div className="col-lg-12">
                 <button
                     className="btn btn-block btn-outline-dark"
-                    onClick={(): void => executeScript("alert(1)")}
+                    onClick={() => executeScript(CODE)}
                 >
-                    Alert(1)
-                </button>
-                <button
-                    className="btn btn-block btn-outline-dark"
-                    onClick={(): void => executeScript("alert(2)")}
-                >
-                    Alert(2)
+                    Calculate Hash
                 </button>
             </div>
         </div>
