@@ -1,31 +1,19 @@
+import { image } from "html2canvas/dist/types/css/types/image";
 import React, { FunctionComponent } from "react";
 import { browser, Tabs } from "webextension-polyfill-ts";
 
 const CODE = `
-  import {DifferenceHashBuilder, Hash} from 'browser-image-hash';
-
-  const builder = new DifferenceHashBuilder();
-  const targetURL = new URL('./example.jpg', window.location.href);
-  const destHash = await builder.build(targetURL);
-  const srcHash = new Hash('0111011001110000011110010101101100110011000100110101101000111000');
- 
-  if (srcHash.getHammingDistance(destHash) <= 10) {
-     console.log('Resembles');
-     return;
-  }
- 
-  console.log('Different');
 `;
 
 /**
  * Executes a string of Javascript on the current tab
  * @param code The string of code to execute on the current tab
  */
-function executeScript(code: string): void {
+async function executeScript(code: string): Promise<void> {
     // Query for the active tab in the current window
     browser.tabs
         .query({ active: true, currentWindow: true })
-        .then((tabs: Tabs.Tab[]) => {
+        .then(async (tabs: Tabs.Tab[]) => {
             // Pulls current tab from browser.tabs.query response
             const currentTab: Tabs.Tab | undefined = tabs[0];
 
@@ -34,8 +22,25 @@ function executeScript(code: string): void {
                 return;
             }
 
+            const imageUri = await browser.tabs.captureTab();
+            console.log(imageUri);
+            //     (imageUri) => {
+            //         console.log(imageUri);
+            //     },
+            //     (error) => {
+            //         console.log(error);
+            //     },
+            // );
+
+            browser.runtime.sendMessage({ imageUri });
+
+            // const newTab = await browser.tabs.create({ url: "about:blank" });
+            // browser.tabs.executeScript(newTab.id, {
+            //     code: "document.createElement('img').src = " + imageUri,
+            // });
+
             browser.tabs.executeScript(currentTab.id, {
-                file: "jquery.min.js",
+                file: "js/screenshoter.js",
             });
 
             // Executes the script in the current tab

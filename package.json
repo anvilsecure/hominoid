@@ -65,7 +65,11 @@
         "webpack-merge": "^4.2.2"
     },
     "dependencies": {
+        "blockhash": "^0.2.0",
         "bootstrap": "^4.5.2",
+        "browser-image-hash": "^0.0.5",
+        "dhash-image": "^1.2.1",
+        "html2canvas": "^1.1.4",
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
         "react-test-renderer": "^16.13.1"
