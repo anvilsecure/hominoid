@@ -14,37 +14,48 @@ async function executeScript(): Promise<boolean> {
     }
 
     const imageUri = await browser.tabs.captureTab();
-    console.log(imageUri);
-
-    const result: boolean = await browser.runtime.sendMessage({ imageUri });
-    // console.log("sendMessage response:");
-    // console.log(result);
-    return result;
+    return browser.runtime.sendMessage({ imageUri });
 }
 
+type ValidationState =
+    | "Idle"
+    | "Similar"
+    | "Different";
+
 interface ScreenshoterState {
-    validationResult: boolean
+    validation: ValidationState
 }
 
 export class Screenshoter extends Component<unknown, ScreenshoterState> {
     constructor(props: unknown) {
         super(props);
-        this.state = { validationResult: false };
+        this.state = { validation: "Idle" };
     }
 
     async handleClick(): Promise<void> {
-        const validationResult = await executeScript();
-        console.log("new validationResult:");
-        console.log(validationResult);
-        this.setState({ validationResult });
+        const valid = await executeScript();
+        const validation = valid ? "Similar" : "Different";
+        this.setState({ validation });
+    }
+
+    renderValidation(): JSX.Element {
+        switch (this.state.validation) {
+            case "Idle": return <a className="alert alert-dark">Idle</a>;
+            case "Similar": return <a className="alert alert-success">Similar</a>;
+            case "Different": return <a className="alert alert-danger">Different</a>;
+        }
     }
 
     render(): JSX.Element {
-        return <div className="row">
-            <div className="col-lg-12">
+        const validation = this.renderValidation();
+        return <div>
+            <div className="row">
                 <button className="btn btn-block btn-outline-dark" onClick={async () => await this.handleClick()}>
-                    Calculate Hash {this.state.validationResult ? "Similar" : "Different"}
+                    Calculate Hash
                 </button>
+            </div>
+            <div className="row">
+                {validation}
             </div>
         </div>
     }
