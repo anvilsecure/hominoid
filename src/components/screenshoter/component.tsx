@@ -1,72 +1,51 @@
-import { image } from "html2canvas/dist/types/css/types/image";
-import React, { FunctionComponent } from "react";
+// import { exec } from "child_process";
+import React, { Component } from "react";
 import { browser, Tabs } from "webextension-polyfill-ts";
 
-const CODE = `
-`;
-
-/**
- * Executes a string of Javascript on the current tab
- * @param code The string of code to execute on the current tab
- */
-async function executeScript(code: string): Promise<void> {
+async function executeScript(): Promise<boolean> {
     // Query for the active tab in the current window
-    browser.tabs
-        .query({ active: true, currentWindow: true })
-        .then(async (tabs: Tabs.Tab[]) => {
-            // Pulls current tab from browser.tabs.query response
-            const currentTab: Tabs.Tab | undefined = tabs[0];
+    const tabs: Tabs.Tab[] = await browser.tabs.query({ active: true, currentWindow: true });
+    // Pulls current tab from browser.tabs.query response
+    const currentTab: Tabs.Tab | undefined = tabs[0];
 
-            // Short circuits function execution is current tab isn't found
-            if (!currentTab) {
-                return;
-            }
+    // Short circuits function execution is current tab isn't found
+    if (!currentTab) {
+        return false;
+    }
 
-            const imageUri = await browser.tabs.captureTab();
-            console.log(imageUri);
-            //     (imageUri) => {
-            //         console.log(imageUri);
-            //     },
-            //     (error) => {
-            //         console.log(error);
-            //     },
-            // );
+    const imageUri = await browser.tabs.captureTab();
+    console.log(imageUri);
 
-            browser.runtime.sendMessage({ imageUri });
-
-            // const newTab = await browser.tabs.create({ url: "about:blank" });
-            // browser.tabs.executeScript(newTab.id, {
-            //     code: "document.createElement('img').src = " + imageUri,
-            // });
-
-            browser.tabs.executeScript(currentTab.id, {
-                file: "js/screenshoter.js",
-            });
-
-            // Executes the script in the current tab
-            browser.tabs
-                .executeScript(currentTab.id, {
-                    code,
-                })
-                .then(() => {
-                    console.log("Done executing code");
-                });
-        });
+    const result: boolean = await browser.runtime.sendMessage({ imageUri });
+    // console.log("sendMessage response:");
+    // console.log(result);
+    return result;
 }
 
-// // // //
+interface ScreenshoterState {
+    validationResult: boolean
+}
 
-export const Screenshoter: FunctionComponent = () => {
-    return (
-        <div className="row">
+export class Screenshoter extends Component<unknown, ScreenshoterState> {
+    constructor(props: unknown) {
+        super(props);
+        this.state = { validationResult: false };
+    }
+
+    async handleClick(): Promise<void> {
+        const validationResult = await executeScript();
+        console.log("new validationResult:");
+        console.log(validationResult);
+        this.setState({ validationResult });
+    }
+
+    render(): JSX.Element {
+        return <div className="row">
             <div className="col-lg-12">
-                <button
-                    className="btn btn-block btn-outline-dark"
-                    onClick={() => executeScript(CODE)}
-                >
-                    Calculate Hash
+                <button className="btn btn-block btn-outline-dark" onClick={async () => await this.handleClick()}>
+                    Calculate Hash {this.state.validationResult ? "Similar" : "Different"}
                 </button>
             </div>
         </div>
-    );
-};
+    }
+}

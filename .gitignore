@@ -2,7 +2,7 @@ dist/js/*
 .vscode
 storybook-static/*
 
-/node_modules
+node_modules
 npm-debug.log
 yarn-error.log
 

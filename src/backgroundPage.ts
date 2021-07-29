@@ -1,40 +1,47 @@
 import { browser } from "webextension-polyfill-ts";
-// import { DifferenceHashBuilder, Hash } from "browser-image-hash";
+// import { blockhashjs } from "blockhash";
+import { DifferenceHashBuilder, Hash } from "browser-image-hash";
 
 // console.log("Background starting");
 // alert("Background starting");
 
 function convertBase64ToBlob(base64String: string): Blob {
-    const arr = base64String.split(",") ?? [];
-    if (arr === null || arr.length < 2) return new Blob();
-    else {
-        const mime = ((arr[0] ?? "").match(/:(.*?);/) ?? [])[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const uint8Array = new Uint8Array(n);
-        while (n--) {
-            uint8Array[n] = bstr.charCodeAt(n);
-        }
-        return new Blob([uint8Array], { type: mime });
+    const arr = base64String.split(",");
+    const mime = ((arr[0] ?? "").match(/:(.*?);/) ?? [])[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const uint8Array = new Uint8Array(n);
+    while (n--) {
+        uint8Array[n] = bstr.charCodeAt(n);
     }
+    return new Blob([uint8Array], { type: mime });
 }
 
-// Listen for messages sent from other parts of the extension
-browser.runtime.onMessage.addListener((request: { popupMounted: boolean }) => {
-    // Log statement if request.popupMounted is true
-    // NOTE: this request is sent in `popup/component.tsx`
-    if (request.popupMounted) {
-        console.log("backgroundPage notified that Popup.tsx has mounted.");
-    }
-});
+function downloadImageUri(imageUri: string) {
+    const blob = convertBase64ToBlob(imageUri);
+    browser.downloads.download({
+        url: URL.createObjectURL(blob),
+        filename: "screenshot.png",
+    });
+}
 
-browser.runtime.onMessage.addListener((request: { imageUri: string }) => {
-    if (request.imageUri != undefined) {
-        const blob = convertBase64ToBlob(request.imageUri);
-        browser.downloads.download({
-            url: URL.createObjectURL(blob),
-            filename: "screenshot.png",
-        });
+async function calculateHash(imageUri: string): Promise<Hash> {
+    const builder = new DifferenceHashBuilder();
+    return builder.build(new URL(imageUri));
+}
+
+browser.runtime.onMessage.addListener(async (request: { imageUri: string }) => {
+    const imageUri = request.imageUri;
+    if (imageUri != undefined) {
+        // downloadImageUri(imageUri);
+
+        const currentHash = await calculateHash(imageUri);
+        console.log({ currentHash });
+
+        const srcHash = new Hash("0000001010100111111111011111111111111111111111111111111111111111");
+        const result = srcHash.getHammingDistance(currentHash) <= 10;
+        console.log(result);
+        return result;
     }
 });
 
