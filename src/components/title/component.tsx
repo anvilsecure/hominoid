@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 
 // // // //
 
-export const Hello: FunctionComponent = () => {
+export const Title: FunctionComponent = () => {
     return (
         <div className="row">
             <div className="col-lg-12 text-center">

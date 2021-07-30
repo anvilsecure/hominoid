@@ -22,11 +22,11 @@ type ValidationState =
     | "Similar"
     | "Different";
 
-interface ScreenshoterState {
+interface HasherState {
     validation: ValidationState
 }
 
-export class Screenshoter extends Component<unknown, ScreenshoterState> {
+export class Hasher extends Component<unknown, HasherState> {
     constructor(props: unknown) {
         super(props);
         this.state = { validation: "Idle" };

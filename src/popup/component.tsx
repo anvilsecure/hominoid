@@ -1,24 +1,18 @@
 import React, { FunctionComponent } from "react";
-import { Hello } from "@src/components/hello";
-import { browser } from "webextension-polyfill-ts";
-import { Screenshoter } from "@src/components/screenshoter";
+import { Title } from "@src/components/title";
+import { Hasher } from "@src/components/hasher";
+import { HashDb } from "@src/components/hashDb";
 import "./styles.scss";
 
-// // // //
-
 export const Popup: FunctionComponent = () => {
-    // Sends the `popupMounted` event
-    React.useEffect(() => {
-        browser.runtime.sendMessage({ popupMounted: true });
-    }, []);
-
-    // Renders the component tree
     return (
         <div className="popup-container">
             <div className="container mx-4 my-4">
-                <Hello />
+                <Title />
                 <hr />
-                <Screenshoter />
+                <Hasher />
+                <hr />
+                <HashDb hashes={[{ page: "pepe.com", hash: "123123" }]} />
             </div>
         </div>
     );
