@@ -1,4 +1,3 @@
-// import { exec } from "child_process";
 import { ValidationState } from "@src/model";
 import React, { Component } from "react";
 

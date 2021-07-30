@@ -1,14 +1,14 @@
-import { PageSignature } from "@src/model";
+import { SignatureDatabase, Signature } from "@src/model";
 import React, { FunctionComponent } from "react";
 
-type HashDbState = { hashes: PageSignature[]; }
+type HashDbState = { db: SignatureDatabase; }
 
 export const HashDb: FunctionComponent<HashDbState> = (state: HashDbState) => {
     return <div>
         <div className="row">
             <ul>
-                {state.hashes.map((PageSignature) => {
-                    return <li key={PageSignature.url}>{PageSignature.url}: {PageSignature.hash}</li>
+                {state.db.map((page) => {
+                    return <li key={page.url}>{page.url}: {page.hash.toString()}</li>
                 })}
             </ul>
         </div>

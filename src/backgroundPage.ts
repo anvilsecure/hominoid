@@ -1,6 +1,6 @@
 import { browser, Tabs } from "webextension-polyfill-ts";
 // import { blockhashjs } from "blockhash";
-import { DifferenceHashBuilder, Hash } from "browser-image-hash";
+import { DifferenceHashBuilder } from "browser-image-hash";
 import { PageSignature } from "./model";
 
 // console.log("Background starting");
@@ -46,5 +46,5 @@ browser.runtime.onMessage.addListener(async (): Promise<PageSignature | undefine
     // const result = srcHash.getHammingDistance(currentHash) <= 10;
     // console.log(result);
 
-    return { url, hash: hash.toString() };
+    return { url, hash: hash.rawHash };
 });
