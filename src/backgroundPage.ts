@@ -1,6 +1,7 @@
-import { browser } from "webextension-polyfill-ts";
+import { browser, Tabs } from "webextension-polyfill-ts";
 // import { blockhashjs } from "blockhash";
 import { DifferenceHashBuilder, Hash } from "browser-image-hash";
+import { PageSignature } from "./model";
 
 // console.log("Background starting");
 // alert("Background starting");
@@ -25,17 +26,25 @@ function downloadImageUri(imageUri: string) {
     });
 }
 
-browser.runtime.onMessage.addListener(async (request: { imageUri: string }) => {
-    const imageUri = request.imageUri;
-    if (imageUri != undefined) {
-        // downloadImageUri(imageUri);
+browser.runtime.onMessage.addListener(async (): Promise<PageSignature | undefined> => {
+    const tabs: Tabs.Tab[] = await browser.tabs.query({ active: true, currentWindow: true });
+    const currentTab: Tabs.Tab | undefined = tabs[0];
+    if (!currentTab)
+        return undefined;
+    const url = currentTab.url;
+    if (url === undefined)
+        return undefined;
 
-        const currentHash = await new DifferenceHashBuilder().build(new URL(imageUri));
-        console.log({ currentHash });
+    const imageUri = await browser.tabs.captureTab();
+    // const imageUri = request.imageUri;
+    // downloadImageUri(imageUri);
 
-        const srcHash = new Hash("0000001010100111111111011111111111111111111111111111111111111111");
-        const result = srcHash.getHammingDistance(currentHash) <= 10;
-        console.log(result);
-        return result;
-    }
+    const hash = await new DifferenceHashBuilder().build(new URL(imageUri));
+    // console.log({ hash });
+
+    // const srcHash = new Hash("0000001010100111111111011111111111111111111111111111111111111111");
+    // const result = srcHash.getHammingDistance(currentHash) <= 10;
+    // console.log(result);
+
+    return { url, hash: hash.toString() };
 });

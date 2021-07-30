@@ -1,41 +1,19 @@
 // import { exec } from "child_process";
+import { ValidationState } from "@src/model";
 import React, { Component } from "react";
-import { browser, Tabs } from "webextension-polyfill-ts";
 
-async function executeScript(): Promise<boolean> {
-    // Query for the active tab in the current window
-    const tabs: Tabs.Tab[] = await browser.tabs.query({ active: true, currentWindow: true });
-    // Pulls current tab from browser.tabs.query response
-    const currentTab: Tabs.Tab | undefined = tabs[0];
 
-    // Short circuits function execution is current tab isn't found
-    if (!currentTab) {
-        return false;
-    }
-
-    const imageUri = await browser.tabs.captureTab();
-    return browser.runtime.sendMessage({ imageUri });
+interface HasherProps {
+    onClick: any
 }
-
-type ValidationState =
-    | "Idle"
-    | "Similar"
-    | "Different";
-
 interface HasherState {
     validation: ValidationState
 }
 
-export class Hasher extends Component<unknown, HasherState> {
-    constructor(props: unknown) {
+export class Hasher extends Component<HasherProps, HasherState> {
+    constructor(props: HasherProps) {
         super(props);
         this.state = { validation: "Idle" };
-    }
-
-    async handleClick(): Promise<void> {
-        const valid = await executeScript();
-        const validation = valid ? "Similar" : "Different";
-        this.setState({ validation });
     }
 
     renderValidation(): JSX.Element {
@@ -50,7 +28,7 @@ export class Hasher extends Component<unknown, HasherState> {
         const validation = this.renderValidation();
         return <div>
             <div className="row">
-                <button className="btn btn-block btn-outline-dark" onClick={async () => await this.handleClick()}>
+                <button className="btn btn-block btn-outline-dark" onClick={this.props.onClick}>
                     Calculate Hash
                 </button>
             </div>
