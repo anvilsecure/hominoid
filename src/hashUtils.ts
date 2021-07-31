@@ -1,4 +1,5 @@
 import { Hash } from "browser-image-hash";
+import { browser } from "webextension-polyfill-ts";
 import { SignatureDatabase, Signature, VerificationResult } from "./model";
 
 export function verifySignature(signature: Signature, db: SignatureDatabase): VerificationResult {
@@ -11,4 +12,15 @@ export function verifySignature(signature: Signature, db: SignatureDatabase): Ve
         const distance = signatureAsHash.getHammingDistance(existingAsHash);
         return distance <= 10 ? "Similar" : "Different";
     }
+}
+
+export async function storeSignature(signature: Signature, db: SignatureDatabase): Promise<SignatureDatabase> {
+    const newDb = db.concat(signature);
+    await browser.storage.local.set({ signatureDatabase: newDb });
+    return newDb;
+}
+
+export async function loadDatabase(): Promise<SignatureDatabase> {
+    const serialized = await browser.storage.local.get("signatureDatabase");
+    return (serialized.signatureDatabase ?? []) as SignatureDatabase;
 }

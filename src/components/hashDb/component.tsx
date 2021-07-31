@@ -1,4 +1,4 @@
-import { SignatureDatabase, Signature } from "@src/model";
+import { SignatureDatabase } from "@src/model";
 import React, { FunctionComponent } from "react";
 
 type HashDbState = { db: SignatureDatabase; }

@@ -1,9 +1,8 @@
 import { ValidationState } from "@src/model";
 import React, { Component } from "react";
 
-
 interface HasherProps {
-    onClick: any
+    onClick: () => Promise<void>
 }
 interface HasherState {
     validation: ValidationState

@@ -8,7 +8,9 @@
         "default_popup": "popup.html"
     },
     "background": {
-        "scripts": ["js/backgroundPage.js"],
+        "scripts": [
+            "js/backgroundPage.js"
+        ],
         "persistent": false
     },
     "icons": {
@@ -16,5 +18,14 @@
         "48": "icon-48.png",
         "128": "icon-128.png"
     },
-    "permissions": ["<all_urls>", "downloads", "tabs", "activeTab", "notifications", "http://*/", "https://*/"]
+    "permissions": [
+        "<all_urls>",
+        "downloads",
+        "tabs",
+        "storage",
+        "activeTab",
+        "notifications",
+        "http://*/",
+        "https://*/"
+    ]
 }
