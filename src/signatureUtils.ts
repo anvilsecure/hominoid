@@ -1,18 +1,9 @@
 import { Hash } from "browser-image-hash";
 import { browser } from "webextension-polyfill-ts";
-import { SignatureDatabase, Signature, VerificationResult } from "./model";
+import { SignatureDatabase, Signature } from "./model";
 
-export function verifySignature(signature: Signature, db: SignatureDatabase): VerificationResult {
-    const existing = db.find((s) => s.url === signature.url);
-    if (existing === undefined)
-        return "New";
-    else {
-        const existingAsHash = new Hash(existing.hash);
-        const signatureAsHash = new Hash(signature.hash);
-        const distance = signatureAsHash.getHammingDistance(existingAsHash);
-        return distance <= 10 ? "Similar" : "Different";
-    }
-}
+/////////////////////////
+// Signature
 
 function areRelatives(h1: Hash, h2: Hash): boolean {
     return h1.getHammingDistance(h2) <= 10;
