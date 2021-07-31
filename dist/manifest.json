@@ -1,10 +1,10 @@
 {
     "manifest_version": 2,
-    "name": "Chrome Extension Starter",
-    "description": "A Chrome Extension starter kit",
-    "version": "1.0.0",
+    "name": "Hominoid",
+    "description": "Hominoid - An Anti-Phising Plugin proof of concept by Anvil Ventures",
+    "version": "0.0.1",
     "browser_action": {
-        "default_icon": "icon-16.png",
+        "default_icon": "icon-32.png",
         "default_popup": "popup.html"
     },
     "background": {
@@ -14,9 +14,7 @@
         "persistent": false
     },
     "icons": {
-        "16": "icon-16.png",
-        "48": "icon-48.png",
-        "128": "icon-128.png"
+        "32": "icon-32.png"
     },
     "permissions": [
         "<all_urls>",
