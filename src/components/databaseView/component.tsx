@@ -1,9 +1,9 @@
 import { SignatureDatabase } from "@src/model";
 import React, { FunctionComponent } from "react";
 
-type HashDbState = { db: SignatureDatabase; }
+type DatabaseViewState = { db: SignatureDatabase; }
 
-export const HashDb: FunctionComponent<HashDbState> = (state: HashDbState) => {
+export const DatabaseView: FunctionComponent<DatabaseViewState> = (state: DatabaseViewState) => {
     return <div>
         <div className="row">
             <ul>

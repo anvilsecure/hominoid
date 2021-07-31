@@ -1,0 +1,1 @@
+export { DatabaseView } from "./component";

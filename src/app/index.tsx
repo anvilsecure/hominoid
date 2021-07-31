@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import { browser } from "webextension-polyfill-ts";
 import { App } from "./component";
 import "../scss/app.scss";
-import { loadDatabase } from "@src/hashUtils";
+import { loadDatabase } from "@src/signatureUtils";
 
 // // // //
 

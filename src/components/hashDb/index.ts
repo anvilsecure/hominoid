@@ -1,1 +1,0 @@
-export { HashDb } from "./component";

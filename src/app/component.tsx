@@ -2,10 +2,10 @@ import "./styles.scss";
 import React, { Component } from "react";
 import { Title } from "@src/components/title";
 import { Hasher } from "@src/components/hasher";
-import { HashDb } from "@src/components/hashDb";
+import { DatabaseView } from "@src/components/databaseView";
 import { SignatureDatabase, Signature } from "@src/model";
 import { browser } from "webextension-polyfill-ts";
-import { storeSignature, verifySignature } from "@src/hashUtils";
+import { storeSignature, verifySignature } from "@src/signatureUtils";
 
 type AppState = {
     db: SignatureDatabase
@@ -48,7 +48,7 @@ export class App extends Component<AppState, AppState> {
                 <hr />
                 <Hasher onClick={async () => await this.handleClick()} />
                 <hr />
-                <HashDb db={this.state.db} />
+                <DatabaseView db={this.state.db} />
             </div>
         </div>
     }
