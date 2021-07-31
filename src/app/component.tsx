@@ -1,7 +1,7 @@
 import "./styles.scss";
 import React, { Component } from "react";
 import { Title } from "@src/components/title";
-import { Hasher } from "@src/components/hasher";
+import { Signer } from "@src/components/hasher";
 import { DatabaseView } from "@src/components/databaseView";
 import { SignatureDatabase, Signature } from "@src/model";
 import { browser } from "webextension-polyfill-ts";
@@ -46,7 +46,7 @@ export class App extends Component<AppState, AppState> {
             <div className="container mx-4 my-4">
                 <Title />
                 <hr />
-                <Hasher onClick={async () => await this.handleClick()} />
+                <Signer onClick={async () => await this.handleClick()} />
                 <hr />
                 <DatabaseView db={this.state.db} />
             </div>

@@ -1,1 +1,1 @@
-export { Hasher } from "./component";
+export { Signer } from "./component";

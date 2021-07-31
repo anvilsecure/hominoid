@@ -1,15 +1,15 @@
 import { ValidationState } from "@src/model";
 import React, { Component } from "react";
 
-interface HasherProps {
+interface SignerProps {
     onClick: () => Promise<void>
 }
-interface HasherState {
+interface SignerState {
     validation: ValidationState
 }
 
-export class Hasher extends Component<HasherProps, HasherState> {
-    constructor(props: HasherProps) {
+export class Signer extends Component<SignerProps, SignerState> {
+    constructor(props: SignerProps) {
         super(props);
         this.state = { validation: "Idle" };
     }
@@ -27,7 +27,7 @@ export class Hasher extends Component<HasherProps, HasherState> {
         return <div>
             <div className="row">
                 <button className="btn btn-block btn-outline-dark" onClick={this.props.onClick}>
-                    Calculate Hash
+                    Verify Signature
                 </button>
             </div>
             <div className="row">
