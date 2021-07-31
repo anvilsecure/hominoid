@@ -1,44 +1,50 @@
 import "./styles.scss";
 import React, { Component } from "react";
 import { Title } from "@src/components/title";
-import { Signer } from "@src/components/hasher";
+import { Sign } from "@src/components/sign";
 import { DatabaseView } from "@src/components/databaseView";
-import { SignatureDatabase, Signature } from "@src/model";
+import { SignatureDatabase, Signature, VerificationResult } from "@src/model";
 import { browser } from "webextension-polyfill-ts";
-import { storeSignature, verifySignature } from "@src/signatureUtils";
+import { clearDatabase, storeSignature, verifySignature } from "@src/signatureUtils";
+import { Messenger } from "@src/components/messenger";
+import { Clear } from "@src/components/clear/component";
 
-type AppState = {
+type AppProps = {
     db: SignatureDatabase
 }
+type AppState = {
+    db: SignatureDatabase
+    validation: VerificationResult | undefined
+}
 
-export class App extends Component<AppState, AppState> {
+export class App extends Component<AppProps, AppState> {
     constructor(props: AppState) {
         super(props);
-        this.state = { db: props.db ?? [] };
+        this.state = { db: props.db ?? [], validation: undefined };
     }
 
-    async handleClick(): Promise<void> {
+    async sign(): Promise<void> {
         const signature: Signature | undefined = await browser.runtime.sendMessage({});
         if (signature !== undefined) {
 
             switch (verifySignature(signature, this.state.db)) {
                 case "New":
                     const newDb = await storeSignature(signature, this.state.db);
-                    this.setState({ db: newDb });
+                    this.setState({ validation: "New", db: newDb });
                     break;
                 case "Different":
-                    alert("TODO MAL");
-                    console.log("TODO MAL");
+                    this.setState({ validation: "Different" });
                     break;
                 case "Similar":
-                    console.log("Todo bien!");
+                    this.setState({ validation: "Similar" });
                     break;
             }
-
-            // const valid = await executeScript();
-            // const validation = valid ? "Similar" : "Different";
-            // this.setState({ validation });
         }
+    }
+
+    async clear(): Promise<void> {
+        await clearDatabase();
+        this.setState({ db: [], validation: undefined });
     }
 
     render(): JSX.Element {
@@ -46,10 +52,13 @@ export class App extends Component<AppState, AppState> {
             <div className="container mx-4 my-4">
                 <Title />
                 <hr />
-                <Signer onClick={async () => await this.handleClick()} />
+                <Sign onClick={async () => await this.sign()} />
+                <Clear onClick={async () => await this.clear()} />
+                <Messenger validation={this.state.validation} />
                 <hr />
                 <DatabaseView db={this.state.db} />
             </div>
         </div>
     }
+
 }

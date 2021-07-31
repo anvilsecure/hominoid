@@ -24,3 +24,7 @@ export async function loadDatabase(): Promise<SignatureDatabase> {
     const serialized = await browser.storage.local.get("signatureDatabase");
     return (serialized.signatureDatabase ?? []) as SignatureDatabase;
 }
+
+export async function clearDatabase(): Promise<void> {
+    return browser.storage.local.clear();
+}
