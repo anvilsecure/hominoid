@@ -14,10 +14,28 @@ export function verifySignature(signature: Signature, db: SignatureDatabase): Ve
     }
 }
 
+function areRelatives(h1: Hash, h2: Hash): boolean {
+    return h1.getHammingDistance(h2) <= 10;
+}
+
+export function findRelatives(signature: Signature, db: SignatureDatabase): Signature[] {
+    const signatureAsHash = new Hash(signature.hash);
+    return db.filter((s) => s.url != signature.url && areRelatives(signatureAsHash, new Hash(s.hash)));
+}
+
+/////////////////////////
+// Storage
+
 export async function storeSignature(signature: Signature, db: SignatureDatabase): Promise<SignatureDatabase> {
-    const newDb = db.concat(signature);
-    await browser.storage.local.set({ signatureDatabase: newDb });
-    return newDb;
+    const exists = db.find((s) => s.url === signature.url);
+    if (exists) {
+        // TODO: See what policy we should take for the same URL with different hashes
+        return db;
+    } else {
+        const newDb = db.concat(signature);
+        await browser.storage.local.set({ signatureDatabase: newDb });
+        return newDb;
+    }
 }
 
 export async function loadDatabase(): Promise<SignatureDatabase> {

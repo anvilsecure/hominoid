@@ -3,9 +3,9 @@ import React, { Component } from "react";
 import { Title } from "@src/components/title";
 import { Sign } from "@src/components/sign";
 import { DatabaseView } from "@src/components/databaseView";
-import { SignatureDatabase, Signature, VerificationResult } from "@src/model";
+import { SignatureDatabase, ValidationIdle, ValidationState, ValidationWithRelatives } from "@src/model";
 import { browser } from "webextension-polyfill-ts";
-import { clearDatabase, storeSignature, verifySignature } from "@src/signatureUtils";
+import { clearDatabase, findRelatives, storeSignature } from "@src/signatureUtils";
 import { Messenger } from "@src/components/messenger";
 import { Clear } from "@src/components/clear/component";
 
@@ -14,37 +14,36 @@ type AppProps = {
 }
 type AppState = {
     db: SignatureDatabase
-    validation: VerificationResult | undefined
+    validation: ValidationState
 }
 
 export class App extends Component<AppProps, AppState> {
     constructor(props: AppState) {
         super(props);
-        this.state = { db: props.db ?? [], validation: undefined };
+        this.state = { db: props.db ?? [], validation: ValidationIdle };
     }
 
     async sign(): Promise<void> {
-        const signature: Signature | undefined = await browser.runtime.sendMessage({});
+        const signature = await browser.runtime.sendMessage({});
         if (signature !== undefined) {
-
-            switch (verifySignature(signature, this.state.db)) {
-                case "New":
-                    const newDb = await storeSignature(signature, this.state.db);
-                    this.setState({ validation: "New", db: newDb });
-                    break;
-                case "Different":
-                    this.setState({ validation: "Different" });
-                    break;
-                case "Similar":
-                    this.setState({ validation: "Similar" });
-                    break;
+            const relatives = findRelatives(signature, this.state.db);
+            // TODO: For now I'm not adding to the DB a signature that has relatives as I'm assuming this is 
+            // a phishing attempt. But the phisher could be the one already stored.
+            if (relatives.length == 0) {
+                const newDb = await storeSignature(signature, this.state.db);
+                this.setState({
+                    db: newDb,
+                    validation: ValidationWithRelatives(signature, relatives)
+                });
+            } else {
+                this.setState({ validation: ValidationWithRelatives(signature, relatives) });
             }
         }
     }
 
     async clear(): Promise<void> {
         await clearDatabase();
-        this.setState({ db: [], validation: undefined });
+        this.setState({ db: [], validation: ValidationIdle });
     }
 
     render(): JSX.Element {
@@ -60,5 +59,4 @@ export class App extends Component<AppProps, AppState> {
             </div>
         </div>
     }
-
 }

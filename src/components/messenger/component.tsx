@@ -1,24 +1,36 @@
-import { VerificationResult } from "@src/model";
+import { ValidationState } from "@src/model";
 import React, { Component } from "react";
 
 interface MessengerState {
-    validation: VerificationResult | undefined
+    validation: ValidationState
 }
 
 export class Messenger extends Component<MessengerState> {
     renderValidation(): JSX.Element {
-        switch (this.props.validation) {
-            case undefined: return <a></a>;
-            case "New": return <a className="alert alert-dark">Signature added to the database</a>;
-            case "Similar": return <a className="alert alert-success">Similar</a>;
-            case "Different": return <a className="alert alert-danger">Different</a>;
+        switch (this.props.validation.type) {
+            case "idle":
+                return <a></a>;
+            case "noRelatives":
+                return <div className="alert alert-success">
+                    <a>This page looks safe</a>
+                </div>;
+            case "withRelatives":
+                const relatives = this.props.validation.relatives;
+                console.log(relatives);
+                return <div className="alert alert-danger">
+                    <a>{relatives.length} similar URLs found in database:</a>
+                    <ul>
+                        {relatives.map((relative, i) => {
+                            return <li key={i}>{relative.url}</li>
+                        })}
+                    </ul>
+                </div>;
         }
     }
 
     render(): JSX.Element {
-        const validation = this.renderValidation();
         return <div className="row">
-            {validation}
+            {this.renderValidation()}
         </div>
     }
 }
