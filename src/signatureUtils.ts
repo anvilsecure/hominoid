@@ -1,4 +1,4 @@
-import { Hash } from "browser-image-hash";
+import { DifferenceHashBuilder, Hash } from "browser-image-hash";
 import { browser } from "webextension-polyfill-ts";
 import { SignatureDatabase, Signature } from "./model";
 
@@ -12,6 +12,12 @@ function areRelatives(h1: Hash, h2: Hash): boolean {
 export function findRelatives(signature: Signature, db: SignatureDatabase): Signature[] {
     const signatureAsHash = new Hash(signature.hash);
     return db.filter((s) => s.url != signature.url && areRelatives(signatureAsHash, new Hash(s.hash)));
+}
+
+export async function buildSignature(url: string, imageUri: string): Promise<Signature> {
+    const hash = await new DifferenceHashBuilder()
+        .build(new URL(imageUri));
+    return { url, hash: hash.rawHash };
 }
 
 /////////////////////////

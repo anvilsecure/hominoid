@@ -10,8 +10,7 @@
     "background": {
         "scripts": [
             "js/backgroundPage.js"
-        ],
-        "persistent": false
+        ]
     },
     "icons": {
         "32": "icon-32.png"
