@@ -8,7 +8,7 @@ export const DatabaseView: FunctionComponent<DatabaseViewState> = (state: Databa
         <div className="row">
             <ul>
                 {state.db.map((page) => {
-                    return <li key={page.url}>{page.url}: {page.hash.toString()}</li>
+                    return <li key={page.domain}>{page.domain}: {page.hash.toString()}</li>
                 })}
             </ul>
         </div>

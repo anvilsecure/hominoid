@@ -1,21 +1,27 @@
 import { browser, Windows } from "webextension-polyfill-ts";
 
 export async function screenshotCurrentTab(): Promise<string | undefined> {
-    await resizeWindow();
+    // await resizeWindow();
 
     const imageUri = await browser.tabs.captureTab();
-    downloadImageUri(imageUri);
+    // downloadImageUri(imageUri);
 
     return imageUri;
 }
 
-export async function currentUrl(): Promise<string | undefined> {
+export async function currentDomain(): Promise<string | undefined> {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true });
     const currentTab = tabs[0];
-    if (!currentTab)
+    if (!currentTab || !currentTab.url)
         return undefined;
-    return currentTab.url;
+    return new URL(currentTab.url).hostname;
 }
+
+// export function compareDomains(url1: string, url2: string): boolean {
+//     const domain1 = new URL(url1).hostname;
+//     const domain2 = new URL(url2).hostname;
+//     return domain1 === domain2;
+// }
 
 async function resizeWindow(): Promise<Windows.Window | undefined> {
     const currentWindow = await browser.windows.getCurrent();

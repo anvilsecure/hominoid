@@ -1,30 +1,43 @@
 import { DifferenceHashBuilder, Hash } from "browser-image-hash";
 import { browser } from "webextension-polyfill-ts";
-import { SignatureDatabase, Signature } from "./model";
+import { SignatureDatabase, Signature, ValidationResult, ValidationMathesDomain, ValidationMathesOtherDomains, ValidationNewDomain } from "./model";
+
+const HAMMING_TOLERANCE = 10;
 
 /////////////////////////
 // Signature
 
 function areRelatives(h1: Hash, h2: Hash): boolean {
-    return h1.getHammingDistance(h2) <= 10;
+    return h1.getHammingDistance(h2) <= HAMMING_TOLERANCE;
 }
 
-export function findRelatives(signature: Signature, db: SignatureDatabase): Signature[] {
+export function validateNewSignature(signature: Signature, db: SignatureDatabase): ValidationResult {
     const signatureAsHash = new Hash(signature.hash);
-    return db.filter((s) => s.url != signature.url && areRelatives(signatureAsHash, new Hash(s.hash)));
+    const relatives = db.filter(s => areRelatives(signatureAsHash, new Hash(s.hash)));
+    const relativesOtherDomains = relatives.filter(s => s.domain != signature.domain);
+
+    if (relativesOtherDomains.length == 0) {
+        const containsSameDomain = db.find(s => s.domain === signature.domain) != undefined;
+        if (containsSameDomain)
+            return ValidationMathesDomain(signature);
+        else
+            return ValidationNewDomain(signature);
+    } else {
+        return ValidationMathesOtherDomains(signature, relatives);
+    }
 }
 
-export async function buildSignature(url: string, imageUri: string): Promise<Signature> {
+export async function buildSignature(domain: string, imageUri: string): Promise<Signature> {
     const hash = await new DifferenceHashBuilder()
         .build(new URL(imageUri));
-    return { url, hash: hash.rawHash };
+    return { domain, hash: hash.rawHash };
 }
 
 /////////////////////////
 // Storage
 
 export async function storeSignature(signature: Signature, db: SignatureDatabase): Promise<SignatureDatabase> {
-    const exists = db.find((s) => s.url === signature.url);
+    const exists = db.find((s) => s.domain === signature.domain);
     if (exists) {
         // TODO: See what policy we should take for the same URL with different hashes
         return db;

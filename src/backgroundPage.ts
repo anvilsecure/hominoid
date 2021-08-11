@@ -1,15 +1,15 @@
 import { browser } from "webextension-polyfill-ts";
-import { currentUrl, screenshotCurrentTab } from "./browserUtils";
+import { currentDomain, screenshotCurrentTab } from "./browserUtils";
 import { buildSignature } from "./signatureUtils";
 
 browser.runtime.onMessage.addListener(async () => {
-    const url = await currentUrl();
-    if (url === undefined)
+    const domain = await currentDomain();
+    if (domain === undefined)
         return undefined;
 
     const imageUri = await screenshotCurrentTab();
     if (imageUri === undefined)
         return undefined;
 
-    return buildSignature(url, imageUri);
+    return buildSignature(domain, imageUri);
 });
