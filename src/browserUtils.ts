@@ -1,10 +1,20 @@
 import { browser, Windows } from "webextension-polyfill-ts";
 
+const COMPARABLE_WINDOW_WIDTH = 360;
+const COMPARABLE_WINDOW_HEIGHT = 640;
+
 export async function screenshotCurrentTab(): Promise<string | undefined> {
-    // await resizeWindow();
+    const originalWindow = await resizeWindow(COMPARABLE_WINDOW_WIDTH, COMPARABLE_WINDOW_HEIGHT);
+    if (!originalWindow)
+        return undefined;
 
     const imageUri = await browser.tabs.captureTab();
-    // downloadImageUri(imageUri);
+    downloadImageUri(imageUri);
+
+    await resizeWindow(
+        originalWindow.width ?? COMPARABLE_WINDOW_WIDTH,
+        originalWindow.height ?? COMPARABLE_WINDOW_HEIGHT
+    );
 
     return imageUri;
 }
@@ -23,17 +33,13 @@ export async function currentDomain(): Promise<string | undefined> {
 //     return domain1 === domain2;
 // }
 
-async function resizeWindow(): Promise<Windows.Window | undefined> {
+async function resizeWindow(width: number, height: number): Promise<Windows.Window | undefined> {
     const currentWindow = await browser.windows.getCurrent();
     if (currentWindow.id === undefined)
         return undefined;
-    const updateInfo: Windows.UpdateUpdateInfoType = {
-        left: 0,
-        top: 0,
-        width: 768,
-        height: 1024
-    };
-    return browser.windows.update(currentWindow.id, updateInfo);
+    const updateInfo: Windows.UpdateUpdateInfoType = { width, height };
+    await browser.windows.update(currentWindow.id, updateInfo);
+    return currentWindow;
 }
 
 function convertBase64ToBlob(base64String: string): Blob {

@@ -9,7 +9,7 @@
     },
     "background": {
         "scripts": [
-            "js/backgroundPage.js"
+            "js/backgroundScript.js"
         ]
     },
     "icons": {
@@ -23,6 +23,7 @@
         "activeTab",
         "notifications",
         "http://*/",
-        "https://*/"
+        "https://*/",
+        "webNavigation"
     ]
 }
