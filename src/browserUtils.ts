@@ -2,6 +2,7 @@ import { browser, Windows } from "webextension-polyfill-ts";
 
 const COMPARABLE_WINDOW_WIDTH = 360;
 const COMPARABLE_WINDOW_HEIGHT = 640;
+const DEFAULT_DOMAIN = "<empty_domain>";
 
 export async function screenshotCurrentTab(): Promise<string | undefined> {
     const originalWindow = await resizeWindow(COMPARABLE_WINDOW_WIDTH, COMPARABLE_WINDOW_HEIGHT);
@@ -19,19 +20,14 @@ export async function screenshotCurrentTab(): Promise<string | undefined> {
     return imageUri;
 }
 
-export async function currentDomain(): Promise<string | undefined> {
+export async function currentDomain(): Promise<string> {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true });
     const currentTab = tabs[0];
     if (!currentTab || !currentTab.url)
-        return undefined;
-    return new URL(currentTab.url).hostname;
+        return DEFAULT_DOMAIN;
+    const hostname = new URL(currentTab.url).hostname;
+    return !hostname ? DEFAULT_DOMAIN : hostname;
 }
-
-// export function compareDomains(url1: string, url2: string): boolean {
-//     const domain1 = new URL(url1).hostname;
-//     const domain2 = new URL(url2).hostname;
-//     return domain1 === domain2;
-// }
 
 async function resizeWindow(width: number, height: number): Promise<Windows.Window | undefined> {
     const currentWindow = await browser.windows.getCurrent();
