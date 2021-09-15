@@ -31,7 +31,7 @@ async function showResult(result: ValidationResult): Promise<void> {
             return notify("You've been here before", "This domain was already visited");
         case "matchesOtherDomains":
             return notify("This looks phishy!",
-                `${result.relatives.length} similar URLs found in database for domain ${result.signature.domain}:` +
+                `${result.relatives.length} similar signatures found in database for domain ${result.signature.domain}:` +
                 result.relatives.map((relative) => `- ${relative.domain}\n`)
             );
     }

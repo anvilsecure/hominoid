@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Hominoid",
-    "description": "Hominoid - An Anti-Phising Plugin proof of concept by Anvil Ventures",
+    "description": "Hominoid - An anti-phishing plugin proof of concept by Anvil Ventures",
     "version": "0.0.1",
     "browser_action": {
         "default_icon": "icon-32.png",

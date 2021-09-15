@@ -28,7 +28,7 @@ export class Messenger extends Component<MessengerState> {
             case "matchesOtherDomains":
                 const relatives = result.relatives;
                 return <div className="alert alert-danger">
-                    <a>{relatives.length} similar URLs found in database for domain {result.signature.domain}:</a>
+                    <a>{relatives.length} similar signatures found in database for domain {result.signature.domain}:</a>
                     <ul>
                         {relatives.map((relative, i) => {
                             return <li key={i}>{relative.domain}</li>;
