@@ -1,3 +1,14 @@
+**What is this?**
+
+This is a usable proof-of-concept for a browser extension that checks if a malicious site is trying to impersonate a valid one. 
+
+Its main features are:
+
+- Local database: there is no central database, all information is kept in the user’s browser.
+- Work with what the user sees: Hominoid flags malicious sites that look similar to the real ones, regardless of their code.
+- Private sites: as all computations are done in the user’s browser, there is no difference between public and private sites. All of them can be analyzed accordingly. 
+- Better control: as the plugin resides in the user’s browser, it can be configured to analyze only pages with certain characteristics. For example a login form, a credit card field, etc.
+
 **Getting Started**
 
 Run the following commands to install dependencies and start developing
