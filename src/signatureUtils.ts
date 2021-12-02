@@ -35,6 +35,7 @@ export async function validateNewSignature(signature: Signature): Promise<Valida
 export async function buildSignature(domain: string, imageUri: string): Promise<Signature> {
     const hash = await new DifferenceHashBuilder()
         .build(new URL(imageUri));
+    console.log(`Signature for current tab: ${hash}`);
     return { domain, hash: hash.rawHash };
 }
 
