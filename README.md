@@ -1,6 +1,10 @@
+You can read more details about this proof of concept on the introductory blog post: 
+
+https://www.anvilsecure.com/blog/silly-proof-of-concept-anti-phishing-using-perceptual-hashing-algorithms.html
+
 # What is this?
 
-This is a usable proof-of-concept for a browser extension that checks if a malicious site is trying to impersonate a valid one. 
+A usable proof-of-concept for a browser extension that checks if a malicious site is trying to impersonate a valid one. 
 
 Its main features are:
 
